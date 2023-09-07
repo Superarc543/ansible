@@ -1,0 +1,16 @@
+plugin: aws_ec2
+#Default ~/.aws/credentials
+#aws_profile: default
+cache: yes
+regions:
+  - "ap-northeast-1"
+keyed_groups:
+  # - key: tags.Name
+  # - key: tags.task
+  - key: tags.類別
+filters:
+  instance-state-name : running
+compose:
+  ansible_host: public_ip_address
+  # ec2_ip_address: public_ip_address
+  # ec2_id: instance_id
