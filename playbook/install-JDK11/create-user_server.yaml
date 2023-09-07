@@ -1,0 +1,23 @@
+---
+- name: 創建使用者
+  hosts: 
+    - "_UUUUU"
+  vars:
+    ansible_user: "ubuntu"
+    ansible_ssh_private_key_file: "/home/arc/ansible/aws-keypair/it.pem"  
+  tasks:
+    - name: 創後端群
+      group:
+        name: server-team
+        state: present
+
+    - name: 創後端帳號
+      user:
+        name: "{{ item }}"
+        groups: server-team,sudo
+        password: "{{ 'tonwa9527' | password_hash }}"
+        shell: /bin/bash
+        update_password: on_create
+        state: present
+      with_items:
+        - server

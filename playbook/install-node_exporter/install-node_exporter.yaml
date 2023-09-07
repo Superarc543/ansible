@@ -1,0 +1,54 @@
+---
+- name: 創建使用者
+  hosts: 
+    - arc_node1
+  tasks:
+    - name: 創建監控用群
+      group:
+        name: prometheus
+        state: present
+        
+    - name: 創監控用帳號
+      user:
+        name: "{{ item }}"
+        group: prometheus
+        password: !
+        state: present
+        system: yes
+      with_items:
+        - prometheus
+
+    - name: mkdir /home/prometheus/node_exporter
+      file:
+        path: /home/prometheus/node_exporter
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: '0755'
+
+    - name: untar node_exporter.tar.gz
+      unarchive:
+        src: node_exporter-1.6.1.linux-amd64.tar.gz
+        dest: /home/prometheus/node_exporter/
+        group: prometheus
+
+    - name: setting node_exporter service
+      copy:
+        src: ./node_exporter.service
+        dest: /etc/systemd/system/
+
+    - name: start node_exporter service
+      systemd:
+        name: "{{ item }}"
+        state: started
+      with_items:
+        - node_exporter.service
+
+    - name: enable node_exporter service
+      systemd:
+        name: "{{ item }}"
+        enabled: true
+        masked: true
+      with_items:
+        - node_exporter.service
+

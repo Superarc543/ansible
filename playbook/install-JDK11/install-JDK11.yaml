@@ -1,0 +1,36 @@
+---
+- name: 安裝JDK11
+  hosts: 
+    - "_UUUUU"
+  become: yes
+  become_user: root
+  vars:
+    ansible_user: "ubuntu"
+    ansible_ssh_private_key_file: "/home/arc/ansible/aws-keypair/it.pem"  
+  tasks:
+    - name: "創建JDK目錄/opt/JDK11"
+      file:
+        path: /opt/JDK11
+        state: directory
+        owner: server
+        group: server-team
+        mode: 0775
+
+    - name: "解壓縮JDK包"
+      unarchive:
+        src: zulu11.66.15-ca-fx-jdk11.0.20-linux_x64.tar.gz
+        dest: /tmp
+        remote_src: no
+
+    - name: "檔案複製到目的地 & 賦權"
+      shell: mv /tmp/zulu11.66.15-ca-fx-jdk11.0.20-linux_x64/* /opt/JDK11 && chown -R server:server-team /opt/JDK11/
+      args:
+        executable: /bin/bash
+
+    - name: "加入環境變數"
+      command: sed -i '$a# Zulu JDK 11\nJAVA_HOME=/opt/JDK11\nCLASSPATH=$JAVA_HOME/lib/\nPATH=$PATH:$JAVA_HOME/bin/\nexport PATH JAVA_HOME CLASSPATH' /etc/bash.bashrc
+        
+    - name: "加載配置"
+      shell: source /etc/bash.bashrc
+      args:
+        executable: /bin/bash

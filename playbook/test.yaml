@@ -1,0 +1,15 @@
+---
+- name: 測試權限
+  hosts: 
+    - "_機器1"
+  become: yes
+  become_user: root
+  vars:
+    ansible_user: "ubuntu"
+    ansible_ssh_private_key_file: "/home/arc/ansible/aws-keypair/it.pem"  
+
+  tasks:
+    - name: ls /root/.ssh
+      shell: ls -la /root/.ssh
+      args:
+        executable: /bin/bash

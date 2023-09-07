@@ -1,0 +1,14 @@
+[Service]
+ExecStart=/home/prometheus/node_exporter/node_exporter-1.6.1.linux-amd64/node_exporter
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=10
+User=prometheus
+
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=node_exporter,version:1.6.1
+Wants=network-online.target
+After=network-online.target

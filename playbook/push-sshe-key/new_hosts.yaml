@@ -1,0 +1,9 @@
+---
+###記得-/etc/ansible/ansible.cfg先關閉ssh初始登入詢問host_key_checking = False
+- hosts: test
+  user: root
+  tasks:
+    - name: ssh-copy
+      authorized_key: user=root key="{{ lookup ('file', '/root/.ssh/ansible-agent.pub') }}"
+      tags:
+        - sshkey
