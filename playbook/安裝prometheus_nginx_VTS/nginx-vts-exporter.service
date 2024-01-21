@@ -1,0 +1,14 @@
+[Unit]
+Description=nginx_vts_exporter
+Documentation=https://github.com/hnlq715/nginx-vts-exporter
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/nginx-vts-exporter  \
+          -nginx.scrape_uri http://localhost/status/format/json
+ExecStop=/bin/kill -s QUIT $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+---
+- name: 安裝Prometheus系列-nginx-VTS_exporter
+  hosts: 
+    - TEST
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: COPY
+      copy: 
+        src: "{{item.src}}"
+        dest: "{{item.dest}}"
+      with_items:
+        - {src: "nginx-vts-exporter", dest: "/usr/bin/"}
+        - {src: "nginx-vts-exporter.service", dest: "/etc/systemd/system/"}
+    
+    - name: 加個權限
+      file: 
+        path: /usr/bin/nginx-vts-exporter
+        state: file
+        mode: 0744
+
+    - name: 啟動
+      systemd:
+        name: nginx-vts-exporter.service
+        daemon_reload: yes
+        state: started
+
+    - name: 加入開機
+      systemd:
+        name: nginx-vts-exporter.service
+        enabled: true
