@@ -1,0 +1,35 @@
+---
+- name: 安裝EXPORTER系列
+  hosts: 
+    - TEST
+  become: yes
+  become_user: root
+  tasks:
+
+    - name: 創建資料夾與設定檔
+      file:
+        path: /etc/promtail
+        state: directory
+        mode: '0755'
+    - name: 複製安裝包
+      copy: 
+        src: "promtail-2.8.7.x86_64.rpm"
+        dest: "/tmp/"
+    - name: 安裝
+      yum:
+        name: "/tmp/promtail-2.8.7.x86_64.rpm"
+        state: present
+    
+    - name: COPY
+      copy: 
+        src: "{{item.src}}"
+        dest: "{{item.dest}}"
+      with_items:
+        - {src: "config.yml", dest: "/etc/promtail/"}
+        - {src: "promtail.service", dest: "/etc/systemd/system/"}
+
+    - name: RESTERT
+      systemd: 
+        name: promtail.service
+        daemon_reload: yes
+        state: restarted
